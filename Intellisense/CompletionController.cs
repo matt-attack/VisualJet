@@ -99,14 +99,20 @@ namespace OokLanguage
                     {
                         case VSConstants.VSStd2KCmdID.TYPECHAR:
                             char ch = GetTypeChar(pvaIn);
-                            if (ch == ' ')
+                            if (ch == ' ' || ch == '\n' || ch == '\t')
                                 StartSession();
                             else if (ch == '.')
                                 StartSession();
                             else if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'))
                                 StartSession();
+                            else if (ch == ';')
+                                Cancel();
                             else if (_currentSession != null)
                                 Filter();
+                            break;
+                        case VSConstants.VSStd2KCmdID.RETURN:
+                            if (_currentSession == null)
+                                StartSession();
                             break;
                         case VSConstants.VSStd2KCmdID.BACKSPACE:
                             Filter();
@@ -161,7 +167,7 @@ namespace OokLanguage
 
             SnapshotPoint caret = TextView.Caret.Position.BufferPosition;
             ITextSnapshot snapshot = caret.Snapshot;
-
+            var text = caret.GetContainingLine().GetText();
             if (!Broker.IsCompletionActive(TextView))
             {
                 _currentSession = Broker.CreateCompletionSession(TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);

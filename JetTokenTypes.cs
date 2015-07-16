@@ -7,6 +7,6 @@ namespace OokLanguage
 {
     public enum JetTokenTypes
     {
-        JetKeyword, JetType, JetWhitespace, JetName
+        JetKeyword, JetType, JetWhitespace, JetName, JetComment
     }
 }

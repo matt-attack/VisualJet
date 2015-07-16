@@ -73,6 +73,7 @@ namespace OokLanguage
             _ookTypes["bool"] = JetTokenTypes.JetType;
             _ookTypes["char"] = JetTokenTypes.JetType;
             _ookTypes["short"] = JetTokenTypes.JetType;
+            _ookTypes["//"] = JetTokenTypes.JetComment;
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged
@@ -89,12 +90,12 @@ namespace OokLanguage
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
                 int curLoc = containingLine.Start.Position;
                 string[] tokens = containingLine.GetText().ToLower().Split(' ');
-
+                int start = containingLine.Start.Position;
                 foreach (string tok in tokens)
                 {
                     string ookToken = tok;
                     //eat leading whitespace
-                    if (ookToken.Length > 0 && (ookToken[0] == ' ' || ookToken[0] == '\t'))
+                    while (ookToken.Length > 0 && (ookToken[0] == ' ' || ookToken[0] == '\t'))
                     {
                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, 1));
                         if (tokenSpan.IntersectsWith(curSpan))
@@ -108,6 +109,14 @@ namespace OokLanguage
                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, ookToken.Length));
                         if( tokenSpan.IntersectsWith(curSpan) )
                             yield return new TagSpan<JetTokenTag>(tokenSpan, new JetTokenTag(_ookTypes[ookToken]));
+                    }
+                    else if (ookToken.Length >= 2 && ookToken.Substring(0,2) == "//")
+                    {
+                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, containingLine.GetText().Length-(curLoc-start)));
+                        if (tokenSpan.IntersectsWith(curSpan))
+                            yield return new TagSpan<JetTokenTag>(tokenSpan, new JetTokenTag(_ookTypes["//"]));
+
+                        break;
                     }
                     else 
                     { 

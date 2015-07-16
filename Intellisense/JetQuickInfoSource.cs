@@ -59,6 +59,12 @@ namespace OokLanguage
                     applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
                     quickInfoContent.Add("Exclaimed Ook!");
                 }
+                else if (curTag.Tag.type == JetTokenTypes.JetName)
+                {
+                    var tagSpan = curTag.Span.GetSpans(_buffer).First();
+                    applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+                    quickInfoContent.Add("Some identifier...");
+                }
             }
         }
 

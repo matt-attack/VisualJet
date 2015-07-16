@@ -12,27 +12,6 @@ namespace OokLanguage
         /// Defines the "ordinary" classification type.
         /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name("ook!")]
-        internal static ClassificationTypeDefinition ookExclamation = null;
-
-        /// <summary>
-        /// Defines the "ordinary" classification type.
-        /// </summary>
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name("ook?")]
-        internal static ClassificationTypeDefinition ookQuestion = null;
-
-        /// <summary>
-        /// Defines the "ordinary" classification type.
-        /// </summary>
-        [Export(typeof(ClassificationTypeDefinition))]
-        [Name("ook.")]
-        internal static ClassificationTypeDefinition ookPeriod = null;
-
-        /// <summary>
-        /// Defines the "ordinary" classification type.
-        /// </summary>
-        [Export(typeof(ClassificationTypeDefinition))]
         [Name("jkeyword")]
         internal static ClassificationTypeDefinition jetKeyword = null;
 
@@ -56,6 +35,13 @@ namespace OokLanguage
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("name")]
         internal static ClassificationTypeDefinition jetName = null;
+
+        /// <summary>
+        /// Defines the "ordinary" classification type.
+        /// </summary>
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name("jcomment")]
+        internal static ClassificationTypeDefinition jetComment = null;
 
         #endregion
     }

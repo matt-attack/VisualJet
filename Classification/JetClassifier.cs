@@ -57,14 +57,12 @@ namespace OokLanguage
             _buffer = buffer;
             _aggregator = ookTagAggregator;
             _ookTypes = new Dictionary<JetTokenTypes, IClassificationType>();
-           // _ookTypes[OokTokenTypes.OokExclaimation] = typeService.GetClassificationType("ook!");
-           // _ookTypes[OokTokenTypes.OokPeriod] = typeService.GetClassificationType("ook.");
-           // _ookTypes[OokTokenTypes.OokQuestion] = typeService.GetClassificationType("ook?");
             _ookTypes[JetTokenTypes.JetKeyword] = typeService.GetClassificationType("jkeyword");
             _ookTypes[JetTokenTypes.JetType] = typeService.GetClassificationType("type");
             _ookTypes[JetTokenTypes.JetWhitespace] = typeService.GetClassificationType("whitespace");
 
             _ookTypes[JetTokenTypes.JetName] = typeService.GetClassificationType("name");
+            _ookTypes[JetTokenTypes.JetComment] = typeService.GetClassificationType("jcomment");
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged

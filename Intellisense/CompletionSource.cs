@@ -16,9 +16,13 @@ namespace OokLanguage
     [Name("jetCompletion")]
     class JetCompletionSourceProvider : ICompletionSourceProvider
     {
+
+        [Import]
+        internal IGlyphService GlyphService { get; set; }
+
         public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
         {
-            return new JetCompletionSource(textBuffer);
+            return new JetCompletionSource(textBuffer, GlyphService);
         }
     }
 
@@ -27,21 +31,24 @@ namespace OokLanguage
         private ITextBuffer _buffer;
         private bool _disposed = false;
 
-        public JetCompletionSource(ITextBuffer buffer)
+        public JetCompletionSource(ITextBuffer buffer, IGlyphService gly)
         {
             _buffer = buffer;
+            glyphService = gly;
         }
 
+
+        private readonly IGlyphService glyphService;
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
             if (_disposed)
                 throw new ObjectDisposedException("OokCompletionSource");
-
+            
             List<Completion> completions = new List<Completion>()
             {
                 new Completion("Ook!"),
                 new Completion("Ook."),
-                new Completion("Ook?")
+                new Completion("Ook?", "Ook?", "", glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupEnum, StandardGlyphItem.GlyphItemPublic), "Ook?")
             };
             
             ITextSnapshot snapshot = _buffer.CurrentSnapshot;
@@ -60,6 +67,7 @@ namespace OokLanguage
 
             var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
             var text = applicableTo.GetText(snapshot);
+            //refine here
             completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
         }
 
