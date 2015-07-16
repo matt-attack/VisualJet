@@ -63,6 +63,7 @@ namespace OokLanguage
 
             _ookTypes[JetTokenTypes.JetName] = typeService.GetClassificationType("name");
             _ookTypes[JetTokenTypes.JetComment] = typeService.GetClassificationType("jcomment");
+            _ookTypes[JetTokenTypes.JetString] = typeService.GetClassificationType("jstring");
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged

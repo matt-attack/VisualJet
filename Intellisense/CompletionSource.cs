@@ -93,8 +93,6 @@ namespace OokLanguage
             if (_disposed)
                 throw new ObjectDisposedException("OokCompletionSource");
 
-
-            
             ITextSnapshot snapshot = _buffer.CurrentSnapshot;
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
 
@@ -126,17 +124,21 @@ namespace OokLanguage
             //need to somehow pass the filename
             var path = GetFilePath(this._buffer);
             var name = Path.GetFileName(path);
-           // var name = path.GetFileName();
+            // var name = path.GetFileName();
             IntPtr retVal2 = GetAutoCompletes(path, name, line.LineNumber + 1);
             string retValStr2 = Marshal.PtrToStringAnsi(retVal2);
 
             //append a char that identifies the type info
-            string[] suggestions = retValStr2.Split(' ');
-            foreach (string str in suggestions)
+            string[] suggestions = retValStr2.Split('/');
+            for (int i = 0; i < suggestions.Length; i++)
             {
-                //need to Encode type Data for glyph
-                if (str != " " && str.Length > 0)
-                    completions.Add(new Completion(str, str, "", GetGlyphForCode('c'), str));
+                var str = suggestions[i];
+                if (str != "/" && str.Length > 0)
+                {
+                    string sname = str.Substring(0, str.Length - 1);
+                    string desc = suggestions[++i];
+                    completions.Add(new Completion(sname, sname, desc, GetGlyphForCode(str[str.Length - 1]), sname));
+                }
             }
 
             //refine here
@@ -145,7 +147,15 @@ namespace OokLanguage
 
         public System.Windows.Media.ImageSource GetGlyphForCode(char c)
         {
-            return glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupEnum, StandardGlyphItem.GlyphItemPublic);
+            switch (c)
+            {
+                case 'L':
+                    return glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
+                case 'F':
+                    return glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
+                default:
+                    return glyphService.GetGlyph(StandardGlyphGroup.GlyphGroupEnum, StandardGlyphItem.GlyphItemPublic);
+            }
         }
 
         public void Dispose()

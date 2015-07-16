@@ -82,6 +82,10 @@ namespace OokLanguage
             remove { }
         }
 
+        public static bool IsLetter(char c)
+        {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+        }
         public IEnumerable<ITagSpan<JetTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
 
@@ -89,7 +93,69 @@ namespace OokLanguage
             {
                 ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
                 int curLoc = containingLine.Start.Position;
-                string[] tokens = containingLine.GetText().ToLower().Split(' ');
+                string text = containingLine.GetText();
+                int cursor = 0;
+                while (cursor < text.Length)
+                {
+                    string token;
+                    int start = cursor;
+                    while (IsLetter(text[cursor]) && cursor < text.Length-1)
+                    {
+                        cursor++;
+                    }
+                    if (start != cursor)
+                    {
+                        //was a word
+                        token = text.Substring(start, cursor - start);
+                        if (_ookTypes.ContainsKey(token))
+                        {
+                            var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc+start, token.Length));
+                            if (tokenSpan.IntersectsWith(curSpan))
+                                yield return new TagSpan<JetTokenTag>(tokenSpan, new JetTokenTag(_ookTypes[token]));
+                        }
+                        else
+                        {
+                            var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc+start, token.Length));
+                            if (tokenSpan.IntersectsWith(curSpan))
+                                yield return new TagSpan<JetTokenTag>(tokenSpan, new JetTokenTag(JetTokenTypes.JetName));
+                        }
+                    }
+                    else
+                    {
+                        if (cursor < text.Length-2 && text[cursor] == '/' && text[cursor + 1] == '/')
+                        {
+                            cursor += 2;
+                            var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, containingLine.GetText().Length - start));
+                            if (tokenSpan.IntersectsWith(curSpan))
+                                yield return new TagSpan<JetTokenTag>(tokenSpan, new JetTokenTag(_ookTypes["//"]));
+
+                            break;
+                        }
+                        else if (text[cursor] == '"')
+                        {
+                            cursor++;
+                            bool ignorenext = false;
+                            while ((text[cursor] != '"' || ignorenext) && cursor < text.Length-1)
+                            {
+                                if (text[cursor] == '\'')
+                                    ignorenext = true;
+                                cursor++;
+                            }
+                            var tokenSpan2 = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc + start, cursor-start));
+                            if (tokenSpan2.IntersectsWith(curSpan))
+                                yield return new TagSpan<JetTokenTag>(tokenSpan2, new JetTokenTag(JetTokenTypes.JetString));
+                        }
+                        else
+                        {
+                            cursor++;
+                            var tokenSpan2 = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc + start, 1));
+                            if (tokenSpan2.IntersectsWith(curSpan))
+                                yield return new TagSpan<JetTokenTag>(tokenSpan2, new JetTokenTag(JetTokenTypes.JetName));
+                        }
+                    }
+                }
+
+                /*string[] tokens = containingLine.GetText().ToLower().Split(' ');
                 int start = containingLine.Start.Position;
                 foreach (string tok in tokens)
                 {
@@ -131,7 +197,7 @@ namespace OokLanguage
 
                     //add an extra char location because of the space
                     curLoc += ookToken.Length + 1;
-                }
+                }*/
             }
         }
     }

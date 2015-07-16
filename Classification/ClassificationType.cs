@@ -43,6 +43,14 @@ namespace OokLanguage
         [Name("jcomment")]
         internal static ClassificationTypeDefinition jetComment = null;
 
+
+        /// <summary>
+        /// Defines the "ordinary" classification type.
+        /// </summary>
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name("jstring")]
+        internal static ClassificationTypeDefinition jetString = null;
+
         #endregion
     }
 }

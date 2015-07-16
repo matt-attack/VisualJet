@@ -133,5 +133,26 @@ namespace OokLanguage
             this.BackgroundColor = Colors.White;
         }
     }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = "jstring")]
+    [Name("jstring")]
+    //this should be visible to the end user
+    [UserVisible(true)]
+    //set the priority to be after the default classifiers
+    [Order(Before = Priority.High)]
+    [Order(After = Priority.High)]
+    internal sealed class JetString : ClassificationFormatDefinition
+    {
+        /// <summary>
+        /// Defines the visual format for the "ordinary" classification type
+        /// </summary>
+        public JetString()
+        {
+            this.DisplayName = "Jet String"; //human readable version of the name
+            this.ForegroundColor = Colors.Red;
+            this.BackgroundColor = Colors.White;
+        }
+    }
     #endregion //Format definition
 }
