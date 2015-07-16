@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio;
 using System.Windows;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace OokLanguage
 {
@@ -50,7 +51,7 @@ namespace OokLanguage
             _currentSession = null;
 
             TextView = textView;
-            Broker = broker;
+            Broker = broker;   
         }
 
         public IWpfTextView TextView { get; private set; }
@@ -111,7 +112,7 @@ namespace OokLanguage
                                 Filter();
                             break;
                         case VSConstants.VSStd2KCmdID.RETURN:
-                            if (_currentSession == null)
+                            if (handled == false && _currentSession == null)
                                 StartSession();
                             break;
                         case VSConstants.VSStd2KCmdID.BACKSPACE:
