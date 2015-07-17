@@ -135,7 +135,7 @@ namespace OokLanguage
                         {
                             cursor++;
                             bool ignorenext = false;
-                            while ((text[cursor] != '"' || ignorenext) && cursor < text.Length-1)
+                            while (cursor < text.Length-1 && (text[cursor] != '"' || ignorenext))
                             {
                                 if (text[cursor] == '\'')
                                     ignorenext = true;
