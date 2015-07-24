@@ -125,9 +125,9 @@ namespace OokLanguage
                         if (cursor < text.Length-2 && text[cursor] == '/' && text[cursor + 1] == '/')
                         {
                             cursor += 2;
-                            var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, containingLine.GetText().Length - start));
+                            var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc+start, containingLine.GetText().Length - start));
                             if (tokenSpan.IntersectsWith(curSpan))
-                                yield return new TagSpan<JetTokenTag>(tokenSpan, new JetTokenTag(_ookTypes["//"]));
+                                yield return new TagSpan<JetTokenTag>(tokenSpan, new JetTokenTag(JetTokenTypes.JetComment));
 
                             break;
                         }
@@ -137,15 +137,21 @@ namespace OokLanguage
                             bool ignorenext = false;
                             while (cursor < text.Length-1 && (text[cursor] != '"' || ignorenext))
                             {
-                                if (text[cursor] == '\'')
+                                if (text[cursor] == '\\')
                                     ignorenext = true;
                                 cursor++;
                             }
+                            if (cursor < text.Length && text[cursor] == '"')
+                                cursor++;
+                            //if (curLoc + start + cursor - start >= curSpan.Snapshot.Length)
+                              //  cursor--;
                             var tokenSpan2 = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc + start, cursor-start));
                             if (tokenSpan2.IntersectsWith(curSpan))
                                 yield return new TagSpan<JetTokenTag>(tokenSpan2, new JetTokenTag(JetTokenTypes.JetString));
+
+                            //curLoc += cursor - start;
                         }
-                        else
+                        else if (cursor < text.Length)
                         {
                             cursor++;
                             var tokenSpan2 = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc + start, 1));
